@@ -1,0 +1,17 @@
+services:
+  pgvector:
+    image: tensorchord/pgvecto-rs:pg15-v0.1.13
+    container_name: pgvector
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - "/tmp/pgdata:/var/lib/postgresql/data"
+    deploy:
+      resources:
+        limits:
+          cpus: "8"
+        reservations:
+          cpus: "4"
