@@ -1,4 +1,4 @@
-PY_SOURCE=server client dataset spec
+PY_SOURCE=vector_bench
 
 dev:
 	@pip install -e .[dev]
