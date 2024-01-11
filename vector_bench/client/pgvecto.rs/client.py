@@ -4,7 +4,7 @@ import msgspec
 import psycopg
 from psycopg.types.json import Jsonb
 
-from spec.vector import DatabaseConfig, Record
+from vector_bench.spec import DatabaseConfig, Record
 
 
 class PgVectorsClient:

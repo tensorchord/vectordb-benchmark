@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from spec.vector import DatasetConfig, Distance, FileType
+from vector_bench.spec import DatasetConfig, Distance, FileType
 
 GIST_960_L2 = DatasetConfig(
     name="gist-960-euclidean",
