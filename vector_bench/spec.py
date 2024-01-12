@@ -43,8 +43,8 @@ class DatasetConfig:
 
 @dataclass
 class DatabaseConfig:
-    url: str
-    dataset: DatasetConfig
+    vector_dim: int
+    url: str = "postgresql://postgres:password@127.0.0.1:5432/postgres"
 
 
 @dataclass
