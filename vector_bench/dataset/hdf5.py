@@ -2,10 +2,11 @@ from typing import Iterator
 
 import h5py
 
+from vector_bench.dataset.base import BaseReader
 from vector_bench.spec import Query, Record
 
 
-class HDF5Reader:
+class HDF5Reader(BaseReader):
     def __init__(self, path: str) -> None:
         self.path = path
 

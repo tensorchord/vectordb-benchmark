@@ -2,10 +2,11 @@ from typing import Iterator
 
 import numpy as np
 
+from vector_bench.dataset.base import BaseReader
 from vector_bench.spec import Distance, Query, Record
 
 
-class PseudoReader:
+class PseudoReader(BaseReader):
     def __init__(self) -> None:
         self.record_num = 100_000
         self.query_num = 100
