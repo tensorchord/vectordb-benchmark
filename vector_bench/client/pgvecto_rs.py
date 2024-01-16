@@ -4,9 +4,10 @@ import msgspec
 import numpy as np
 import psycopg
 from psycopg.adapt import Dumper, Loader
-from psycopg.types.json import Jsonb
 from psycopg.types import TypeInfo
+from psycopg.types.json import Jsonb
 
+from vector_bench.client.base import BaseClient
 from vector_bench.spec import DatabaseConfig, Record
 
 
@@ -48,7 +49,7 @@ def register_vector_type(conn: psycopg.Connection, info: TypeInfo):
     adapters.register_loader(info.oid, VectorLoader)
 
 
-class PgVectorsClient:
+class PgVectorsClient(BaseClient):
     LOAD_EXTENSION = """
 CREATE EXTENSION IF NOT EXISTS vectors;
 """
@@ -65,7 +66,8 @@ ON benchmark
 USING vectors (emb vector_l2_ops);
 """
     INSERT = """
-INSERT INTO benchmark (id, emb, metadata) VALUES (%s, %s, %s)
+INSERT INTO benchmark (id, emb, metadata)
+VALUES (%s, %s, %s)
 """
     SEARCH = """
 SELECT id, emb, metadata, emb <-> %s AS score
@@ -141,7 +143,11 @@ if __name__ == "__main__":
     from time import perf_counter
 
     start = perf_counter()
-    asyncio.run(client.insert_batch([
-        Record(4, [0.5] * 1024),
-    ]))
+    asyncio.run(
+        client.insert_batch(
+            [
+                Record(4, [0.5] * 1024),
+            ]
+        )
+    )
     print(perf_counter() - start)

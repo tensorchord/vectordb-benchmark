@@ -60,3 +60,15 @@ class Query:
     expect_ids: Optional[list[int]]
     expect_scores: Optional[list[float]]
     metadata: Optional[dict] = None
+
+
+@dataclass
+class BenchmarkResult:
+    query: int
+    failure: int
+    total_second: float
+    latency: list[float]
+    recall: float
+
+    def response_per_second(self) -> float:
+        return (self.query - self.failure) / self.total_second

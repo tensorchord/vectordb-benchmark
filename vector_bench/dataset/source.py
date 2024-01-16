@@ -11,3 +11,7 @@ GIST_960_L2 = DatasetConfig(
     path="datasets/gist-960-euclidean.csv",
     link="https://ann-benchmarks.com/gist-960-euclidean.hdf5",
 )
+
+SOURCES = (
+    GIST_960_L2,
+)
