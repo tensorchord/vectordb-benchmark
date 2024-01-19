@@ -3,7 +3,7 @@ from typing import Iterator
 import h5py
 
 from vector_bench.dataset.base import BaseReader
-from vector_bench.spec import Query, Record
+from vector_bench.spec import DatasetConfig, Query, Record
 
 
 class HDF5Reader(BaseReader):
@@ -30,3 +30,6 @@ class HDF5Reader(BaseReader):
                     expect_scores=scores.tolist(),
                     metadata=None,
                 )
+
+    def from_config(cls, config: DatasetConfig) -> BaseReader:
+        return cls(config.path)

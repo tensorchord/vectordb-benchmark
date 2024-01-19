@@ -2,19 +2,27 @@ from typing import Iterator
 
 import numpy as np
 
-from vector_bench.dataset.base import BaseReader
+from vector_bench.dataset.base import BaseReader, DatasetConfig
 from vector_bench.spec import Distance, Query, Record
 
 
 class PseudoReader(BaseReader):
-    def __init__(self) -> None:
-        self.record_num = 100_000
+    def __init__(
+        self,
+        num: int = 100_000,
+        dim: int = 128,
+        distance: Distance = Distance.DOT_PRODUCT,
+    ) -> None:
+        self.record_num = num
         self.query_num = 100
-        self.dim = 128
+        self.dim = dim
         self.top_k = 10
-        self.distance = Distance.DOT_PRODUCT
+        self.distance = distance
 
         self.vectors = np.random.rand(self.record_num, self.dim)
+
+    def from_config(cls, config: DatasetConfig) -> BaseReader:
+        return cls(config.vector_dim, config.num, config.distance)
 
     def read_record(self) -> Iterator[Record]:
         for i in range(self.record_num):
