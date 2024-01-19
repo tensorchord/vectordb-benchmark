@@ -24,7 +24,7 @@ class Benchmark:
         self.client: BaseClient = DataBaseClient.select(db_config.name).from_config(
             db_config
         )
-        self.reader: BaseReader = DatasetReader.select(dataset_config.name).from_config(
+        self.reader: BaseReader = DatasetReader.select(dataset_config.type.value).from_config(
             dataset_config
         )
         self.result: BenchmarkResult = BenchmarkResult()

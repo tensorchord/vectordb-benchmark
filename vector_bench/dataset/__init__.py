@@ -4,5 +4,5 @@ from vector_bench.spec import EnumSelector
 
 
 class DatasetReader(EnumSelector):
-    PSEUDO = PseudoReader
-    HDF5 = HDF5Reader
+    RANDOM = PseudoReader
+    H5 = HDF5Reader
