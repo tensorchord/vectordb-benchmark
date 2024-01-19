@@ -113,7 +113,7 @@ ORDER BY score LIMIT %s;
             await conn.commit()
 
     def insert_batch(self, records: list[Record]):
-        with psycopg.AsyncConnection.connect(self.url) as conn:
+        with psycopg.connect(self.url) as conn:
             register_vector(conn)
             conn.commit()
             for record in records:
@@ -127,27 +127,24 @@ ORDER BY score LIMIT %s;
                 )
             conn.commit()
 
-    async def query(self, vector: list[float], top_k: int = 5) -> list[Record]:
-        async with await psycopg.AsyncConnection.connect(self.url) as conn:
+    def query(self, vector: list[float], top_k: int = 5) -> list[Record]:
+        with psycopg.connect(self.url) as conn:
             register_vector(conn)
-            cur = await conn.execute(self.SEARCH, (vector, top_k))
-            result = await cur.fetchall()
-            await conn.commit()
+            cur = conn.execute(self.SEARCH, (vector, top_k))
+            result = cur.fetchall()
+            conn.commit()
         return [Record(id=row[0], vector=row[1], metadata=row[2]) for row in result]
 
 
 if __name__ == "__main__":
     client = PgVectorsClient.from_config(DatabaseConfig(vector_dim=1024))
 
-    import asyncio
     from time import perf_counter
 
     start = perf_counter()
-    asyncio.run(
-        client.insert_batch(
-            [
-                Record(4, [0.5] * 1024),
-            ]
-        )
+    client.insert_batch(
+        [
+            Record(4, [0.5] * 1024),
+        ]
     )
     print(perf_counter() - start)

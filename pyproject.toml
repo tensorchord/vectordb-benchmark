@@ -22,6 +22,8 @@ pgvectors = [
 [build-system]
 requires = ["setuptools", "setuptools_scm>=7.0"]
 build-backend = "setuptools.build_meta"
+[project.scripts]
+"vector_bench" = "vector_bench.main:main"
 
 [tool.setuptools_scm]
 fallback_version = "0.0.0"

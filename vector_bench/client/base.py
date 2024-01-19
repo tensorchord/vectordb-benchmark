@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 
-from vector_bench.spec import Record
+from vector_bench.spec import DatabaseConfig, Record
 
 
 class BaseClient(abc.ABC):
@@ -11,5 +11,9 @@ class BaseClient(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def query(self, vector: list[float], top_k: int):
+    def query(self, vector: list[float], top_k: int = 10):
+        pass
+
+    @abc.abstractclassmethod
+    def from_config(cls, config: DatabaseConfig) -> BaseClient:
         pass

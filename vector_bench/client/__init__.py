@@ -1,3 +1,6 @@
+from vector_bench.client.pgvecto_rs import PgVectorsClient
+from vector_bench.spec import EnumSelector
 
 
-from vector_bench.client.base import BaseClient
+class DataBaseClient(EnumSelector):
+    PGVECTO_RS = PgVectorsClient

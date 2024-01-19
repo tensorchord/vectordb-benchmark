@@ -1,17 +1,28 @@
 from __future__ import annotations
 
-from vector_bench.spec import DatasetConfig, Distance, FileType
+from vector_bench.spec import DatasetConfig, Distance, EnumSelector, FileType
 
 GIST_960_L2 = DatasetConfig(
     name="gist-960-euclidean",
     vector_dim=960,
-    num=1000000,
+    num=1000_000,
     distance=Distance.EUCLIDEAN,
     type=FileType.H5,
     path="datasets/gist-960-euclidean.csv",
     link="https://ann-benchmarks.com/gist-960-euclidean.hdf5",
 )
 
-SOURCES = (
-    GIST_960_L2,
+RANDOM_128_L2 = DatasetConfig(
+    name="random-128-euclidean",
+    vector_dim=128,
+    num=100_000,
+    distance=Distance.EUCLIDEAN,
+    type=FileType.RANDOM,
+    path="datasets/random-128-euclidean.csv",
+    link="https://ann-benchmarks.com/random-128-euclidean.hdf5",
 )
+
+
+class DataSource(EnumSelector):
+    GIST_960_L2 = GIST_960_L2
+    RANDOM_128_L2 = RANDOM_128_L2

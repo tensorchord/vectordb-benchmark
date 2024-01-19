@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Literal, Optional
 
 import numpy as np
 
@@ -27,6 +27,20 @@ class FileType(Enum):
     CSV = "csv"
     JSON = "json"
     H5 = "h5"
+    RANDOM = "random"
+
+
+class EnumSelector(Enum):
+    @classmethod
+    def select(cls, name: str):
+        for item in cls:
+            if item.name.lower() == name:
+                return item.value
+        raise ValueError(f"Invalid name: {name}")
+
+    @classmethod
+    def list(cls):
+        return [item.name.lower() for item in cls]
 
 
 @dataclass
@@ -38,12 +52,13 @@ class DatasetConfig:
     type: FileType
     path: str
     link: str
-    schema: dict
+    schema: dict = field(default_factory=dict)
 
 
 @dataclass
 class DatabaseConfig:
     vector_dim: int
+    name: Literal["pgvecto_rs", "pgvector", "qdrant"] = "pgvecto_rs"
     url: str = "postgresql://postgres:password@127.0.0.1:5432/postgres"
 
 
@@ -64,11 +79,13 @@ class Query:
 
 @dataclass
 class BenchmarkResult:
-    query: int
-    failure: int
-    total_second: float
-    latency: list[float]
-    recall: float
+    query: int = 0
+    failure: int = 0
+    latency: list[float] = field(default_factory=list)
+    recall: list[float] = field(default_factory=list)
 
     def response_per_second(self) -> float:
         return (self.query - self.failure) / self.total_second
+
+    def total_second(self) -> float:
+        return sum(self.latency)
