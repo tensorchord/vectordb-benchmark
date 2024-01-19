@@ -45,7 +45,6 @@ class EnumSelector(Enum):
 
 @dataclass
 class DatasetConfig:
-    name: str
     vector_dim: int
     num: int
     distance: Distance

@@ -8,7 +8,7 @@ from vector_bench.spec import DatabaseConfig
 def main():
     parser = build_arg_parser()
     args = parser.parse_args()
-    logger.info(parser)
+    logger.info(args)
 
     source = DataSource.select(args.source)
     client_config = DatabaseConfig(

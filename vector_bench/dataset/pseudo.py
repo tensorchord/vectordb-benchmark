@@ -21,6 +21,7 @@ class PseudoReader(BaseReader):
 
         self.vectors = np.random.rand(self.record_num, self.dim)
 
+    @classmethod
     def from_config(cls, config: DatasetConfig) -> BaseReader:
         return cls(config.vector_dim, config.num, config.distance)
 

@@ -3,7 +3,6 @@ from __future__ import annotations
 from vector_bench.spec import DatasetConfig, Distance, EnumSelector, FileType
 
 GIST_960_L2 = DatasetConfig(
-    name="gist-960-euclidean",
     vector_dim=960,
     num=1000_000,
     distance=Distance.EUCLIDEAN,
@@ -13,7 +12,6 @@ GIST_960_L2 = DatasetConfig(
 )
 
 RANDOM_128_L2 = DatasetConfig(
-    name="random-128-euclidean",
     vector_dim=128,
     num=100_000,
     distance=Distance.EUCLIDEAN,
