@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Literal, Optional
@@ -81,10 +82,26 @@ class BenchmarkResult:
     query: int = 0
     failure: int = 0
     latency: list[float] = field(default_factory=list)
-    recall: list[float] = field(default_factory=list)
+    precision: list[float] = field(default_factory=list)
 
     def response_per_second(self) -> float:
-        return (self.query - self.failure) / self.total_second
+        return (self.query - self.failure) / self.total_second()
 
     def total_second(self) -> float:
         return sum(self.latency)
+
+    def p95_latency(self) -> float:
+        return np.percentile(self.latency, 95)
+
+    def mean_precision(self) -> float:
+        return np.mean(self.precision)
+
+    def display(self):
+        result = {
+            "rps": self.response_per_second(),
+            "p95_latency": self.p95_latency(),
+            "mean_precision": self.mean_precision(),
+            "total_request": self.query,
+            "failure": self.failure,
+        }
+        print(json.dumps(result, indent=4))

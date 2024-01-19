@@ -8,6 +8,7 @@ from psycopg.types import TypeInfo
 from psycopg.types.json import Jsonb
 
 from vector_bench.client.base import BaseClient
+from vector_bench.log import logger
 from vector_bench.spec import DatabaseConfig, Record
 
 
@@ -83,6 +84,7 @@ ORDER BY score LIMIT %s;
         client = cls()
         client.dim = config.vector_dim
         client.url = config.url
+        logger.info("initializing pgvecto.rs database(dim=%s)...", client.dim)
         client.init_db()
         client.indexing()
         return client
