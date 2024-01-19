@@ -18,4 +18,5 @@ def main():
     if args.insert:
         benchmark.insert()
     if args.query:
-        benchmark.run()
+        result = benchmark.query()
+        result.display()

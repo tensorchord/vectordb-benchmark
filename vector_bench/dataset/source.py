@@ -16,8 +16,8 @@ RANDOM_128_L2 = DatasetConfig(
     num=100_000,
     distance=Distance.EUCLIDEAN,
     type=FileType.RANDOM,
-    path="datasets/random-128-euclidean.csv",
-    link="https://ann-benchmarks.com/random-128-euclidean.hdf5",
+    path="None",
+    link="None",
 )
 
 

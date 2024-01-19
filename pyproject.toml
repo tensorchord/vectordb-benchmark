@@ -8,6 +8,7 @@ dependencies = [
     "msgspec~=0.18.5",
     "h5py~=3.10.0",
     "numpy~=1.26.3",
+    "tqdm~=4.66",
 ]
 [project.optional-dependencies]
 dev = [
