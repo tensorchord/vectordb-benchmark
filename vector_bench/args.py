@@ -12,6 +12,12 @@ def build_arg_parser():
         default="pgvecto_rs",
         help="client type",
     )
+    parser.add_argument(
+        "--worker-num",
+        "-w",
+        type=int,
+        help="number of workers, if not set, use min(32, cpu_thread + 4)",
+    )
     parser.add_argument("--url", "-u", help="database url")
     parser.add_argument(
         "--source", "-s", choices=DataSource.list(), help="dataset source"

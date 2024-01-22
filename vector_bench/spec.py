@@ -58,6 +58,8 @@ class DatasetConfig:
 @dataclass
 class DatabaseConfig:
     vector_dim: int
+    distance: Distance
+    table: str = "benchmark"
     name: Literal["pgvecto_rs", "pgvector", "qdrant"] = "pgvecto_rs"
     url: str = "postgresql://postgres:password@127.0.0.1:5432/postgres"
 
@@ -81,14 +83,13 @@ class Query:
 class BenchmarkResult:
     query: int = 0
     failure: int = 0
+    worker_num: int = 0
+    total_second: float = 0
     latency: list[float] = field(default_factory=list)
     precision: list[float] = field(default_factory=list)
 
     def response_per_second(self) -> float:
-        return (self.query - self.failure) / self.total_second()
-
-    def total_second(self) -> float:
-        return sum(self.latency)
+        return (self.query - self.failure) / self.total_second
 
     def p95_latency(self) -> float:
         return np.percentile(self.latency, 95)
@@ -103,5 +104,7 @@ class BenchmarkResult:
             "mean_precision": self.mean_precision(),
             "total_request": self.query,
             "failure": self.failure,
+            "worker_num": self.worker_num,
+            "total_second": self.total_second,
         }
         print(json.dumps(result, indent=4))

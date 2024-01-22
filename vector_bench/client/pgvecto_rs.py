@@ -3,13 +3,14 @@ from __future__ import annotations
 import msgspec
 import numpy as np
 import psycopg
+from psycopg import sql
 from psycopg.adapt import Dumper, Loader
 from psycopg.types import TypeInfo
 from psycopg.types.json import Jsonb
 
 from vector_bench.client.base import BaseClient
 from vector_bench.log import logger
-from vector_bench.spec import DatabaseConfig, Record
+from vector_bench.spec import DatabaseConfig, Distance, Record
 
 
 class VectorDumper(Dumper):
@@ -50,12 +51,19 @@ def register_vector_type(conn: psycopg.Connection, info: TypeInfo):
     adapters.register_loader(info.oid, VectorLoader)
 
 
+DISTANCE_TO_OP = {
+    Distance.EUCLIDEAN: "vector_l2_ops",
+    Distance.COSINE: "vector_cos_ops",
+    Distance.DOT_PRODUCT: "vector_dot_ops",
+}
+
+
 class PgVectorsClient(BaseClient):
     LOAD_EXTENSION = """
 CREATE EXTENSION IF NOT EXISTS vectors;
 """
     CREATE_TABLE = """
-CREATE TABLE IF NOT EXISTS benchmark (
+CREATE TABLE IF NOT EXISTS {} (
     id SERIAL PRIMARY KEY,
     emb vector({}) NOT NULL,
     metadata JSONB NOT NULL
@@ -63,49 +71,63 @@ CREATE TABLE IF NOT EXISTS benchmark (
 """
     CREATE_INDEX = """
 CREATE INDEX IF NOT EXISTS vector_search
-ON benchmark
-USING vectors (emb vector_l2_ops);
+ON {}
+USING vectors (emb {});
 """
     INSERT = """
-INSERT INTO benchmark (id, emb, metadata)
+INSERT INTO {} (id, emb, metadata)
 VALUES (%s, %s, %s)
 """
     SEARCH = """
 SELECT id, emb, metadata, emb <-> %s AS score
-FROM benchmark
+FROM {}
 ORDER BY score LIMIT %s;
 """
 
     url: str
     dim: int
+    table: str
 
     @classmethod
     def from_config(cls, config: DatabaseConfig) -> PgVectorsClient:
         client = cls()
         client.dim = config.vector_dim
         client.url = config.url
-        logger.info("initializing pgvecto.rs database(dim=%s)...", client.dim)
+        client.table = config.table
+
+        logger.info(
+            "initializing pgvecto.rs database(table=%s, dim=%s)...",
+            client.table,
+            client.dim,
+        )
         client.init_db()
-        client.indexing()
+        client.indexing(config.distance)
         return client
 
     def init_db(self):
         with psycopg.connect(self.url) as conn:
             conn.execute(self.LOAD_EXTENSION)
             register_vector(conn)
-            conn.execute(psycopg.sql.SQL(self.CREATE_TABLE).format(self.dim))
+            conn.execute(
+                sql.SQL(self.CREATE_TABLE).format(sql.Identifier(self.table), self.dim)
+            )
             conn.commit()
 
-    def indexing(self):
+    def indexing(self, distance: Distance):
         with psycopg.connect(self.url) as conn:
-            conn.execute(self.CREATE_INDEX)
+            conn.execute(
+                sql.SQL(self.CREATE_INDEX).format(
+                    sql.Identifier(self.table),
+                    sql.Identifier(DISTANCE_TO_OP[distance]),
+                )
+            )
             conn.commit()
 
     async def insert(self, record: Record):
         async with await psycopg.AsyncConnection.connect(self.url) as conn:
             register_vector_async(conn)
             await conn.execute(
-                self.INSERT,
+                sql.SQL(self.INSERT).format(sql.Identifier(self.table)),
                 (
                     record.id,
                     record.vector,
@@ -120,7 +142,7 @@ ORDER BY score LIMIT %s;
             conn.commit()
             for record in records:
                 conn.execute(
-                    self.INSERT,
+                    sql.SQL(self.INSERT).format(sql.Identifier(self.table)),
                     (
                         record.id,
                         record.vector,
@@ -132,7 +154,9 @@ ORDER BY score LIMIT %s;
     def query(self, vector: list[float], top_k: int = 5) -> list[Record]:
         with psycopg.connect(self.url) as conn:
             register_vector(conn)
-            cur = conn.execute(self.SEARCH, (vector, top_k))
+            cur = conn.execute(
+                sql.SQL(self.SEARCH).format(sql.Identifier(self.table)), (vector, top_k)
+            )
             result = cur.fetchall()
             conn.commit()
         return [Record(id=row[0], vector=row[1], metadata=row[2]) for row in result]

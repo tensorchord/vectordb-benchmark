@@ -9,6 +9,7 @@ dependencies = [
     "h5py~=3.10.0",
     "numpy~=1.26.3",
     "tqdm~=4.66",
+    "httpx",
 ]
 [project.optional-dependencies]
 dev = [
