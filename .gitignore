@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 
 .ruff_cache/
+.csv
+.json
+.hdf5
+datasets/

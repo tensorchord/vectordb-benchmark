@@ -33,4 +33,5 @@ class HDF5Reader(BaseReader):
 
     @classmethod
     def from_config(cls, config: DatasetConfig) -> BaseReader:
+        super().from_config(config)
         return cls(config.path)
