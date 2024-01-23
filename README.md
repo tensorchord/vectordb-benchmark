@@ -3,7 +3,8 @@
 Supported databases/extensions:
 
 - [x] [`pgvecto.rs`](https://github.com/tensorchord/pgvecto.rs)
-- [ ] [`pgvector`]()
+- [ ] [`pgvector`](https://github.com/pgvector/pgvector)
+- [ ] [`qdrant`](https://github.com/qdrant/qdrant/)
 
 Supported datasets:
 
