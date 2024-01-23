@@ -39,7 +39,7 @@ class PseudoReader(BaseReader):
 
     def read_record(self) -> Iterator[Record]:
         for i in range(self.record_num):
-            yield Record(id=i, vector=self.vectors[i].tolist())
+            yield Record(id=i, vector=self.vectors[i])
 
     def read_query(self) -> Iterator[Query]:
         for _ in tqdm(range(self.query_num)):
@@ -47,8 +47,8 @@ class PseudoReader(BaseReader):
             distances = [self.distance(query, x) for x in self.vectors]
             nearest = np.argsort(distances)
             yield Query(
-                vector=query.tolist(),
-                expect_ids=nearest[: self.top_k].tolist(),
+                vector=query,
+                expect_ids=nearest[: self.top_k],
                 expect_scores=[distances[i] for i in nearest[: self.top_k]],
             )
 

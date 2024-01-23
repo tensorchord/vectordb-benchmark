@@ -68,12 +68,14 @@ class Benchmark:
         )
 
     def query(self) -> BenchmarkResult:
+        logger.info("preload queries...")
+        queries = list(self.reader.read_query())
         logger.info("querying...")
         epoch_size = 100
         with ThreadPoolExecutor(self.worker_num) as executor:
             logger.info("using %s executors", executor._max_workers)
             start = perf_counter()
-            for i, epoch in enumerate(batched(self.reader.read_query(), epoch_size)):
+            for i, epoch in enumerate(batched(queries, epoch_size)):
                 epoch_start = perf_counter()
                 for future in as_completed(
                     executor.submit(self._query_helper, query) for query in epoch

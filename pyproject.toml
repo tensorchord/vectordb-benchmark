@@ -27,6 +27,9 @@ build-backend = "setuptools.build_meta"
 [project.scripts]
 "vector_bench" = "vector_bench.main:main"
 
+[tool.setuptools]
+packages = ["vector_bench"]
+
 [tool.setuptools_scm]
 fallback_version = "0.0.0"
 

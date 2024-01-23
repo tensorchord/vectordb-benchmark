@@ -67,15 +67,15 @@ class DatabaseConfig:
 @dataclass
 class Record:
     id: int
-    vector: list[float]
+    vector: np.ndarray
     metadata: Optional[dict] = None
 
 
 @dataclass
 class Query:
-    vector: list[float]
+    vector: np.ndarray
     expect_ids: Optional[list[int]]
-    expect_scores: Optional[list[float]]
+    expect_scores: Optional[np.ndarray]
     metadata: Optional[dict] = None
 
 
