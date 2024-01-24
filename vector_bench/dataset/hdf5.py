@@ -15,7 +15,7 @@ class HDF5Reader(BaseReader):
             for i, vec in enumerate(file["train"]):
                 yield Record(
                     id=i,
-                    vector=vec.tolist(),
+                    vector=vec,
                     metadata=None,
                 )
 
@@ -25,9 +25,9 @@ class HDF5Reader(BaseReader):
                 file["test"], file["neighbors"], file["distances"]
             ):
                 yield Query(
-                    vector=vec.tolist(),
-                    expect_ids=ids.tolist(),
-                    expect_scores=scores.tolist(),
+                    vector=vec,
+                    expect_ids=ids,
+                    expect_scores=scores,
                     metadata=None,
                 )
 

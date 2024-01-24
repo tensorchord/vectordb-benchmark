@@ -8,7 +8,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - "/tmp/pgdata:/var/lib/postgresql/data"
+      - "/tmp/pgvecto_rs_data:/var/lib/postgresql/data"
     deploy:
       resources:
         limits:
