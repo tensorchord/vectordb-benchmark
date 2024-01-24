@@ -15,7 +15,7 @@ Supported datasets:
 ## Installation
 
 ```bash
-pip install vector_bench[pgvectors]
+pip install vector_bench
 ```
 
 ## Run
