@@ -3,14 +3,13 @@
 Supported databases/extensions:
 
 - [x] [`pgvecto.rs`](https://github.com/tensorchord/pgvecto.rs)
-- [ ] [`pgvector`](https://github.com/pgvector/pgvector)
+- [x] [`pgvector`](https://github.com/pgvector/pgvector)
 - [ ] [`qdrant`](https://github.com/qdrant/qdrant/)
 
 Supported datasets:
 
 - [x] random generated
 - [x] GIST 960
-
 
 ## Installation
 
@@ -19,6 +18,16 @@ pip install vector_bench
 ```
 
 ## Run
+
+### Server
+
+Run the docker compose file under [`server`](server/) folder.
+
+```base
+cd server/pgvecto.rs && docker compose up -d
+```
+
+### Client
 
 ```bash
 # help
@@ -30,3 +39,22 @@ vector_bench --query --url postgresql://postgres:password@localhost:5432/postgre
 # insert and query the data
 vector_bench --insert --query --url postgresql://postgres:password@localhost:5432/postgres -s gist_960_l2
 ```
+
+## How to contribute
+
+```bash
+# install all the necessary dependencies:
+make dev
+# format code
+make format
+# lint
+make lint
+```
+
+### Add more datasets
+
+- Add new `DatasetConfig` to `vector_bench/dataset/source.py`
+
+### Add more clients
+
+- Inherit and implement the `BaseClient` class in `vector_bench/client/base.py`
