@@ -1,23 +1,25 @@
 [project]
-name = "vectordb-benchmark"
+name = "vector-bench"
+description = "Benchmark vector database/extensions."
+authors = [{ name = "TensorChord", email = "envd-maintainers@tensorchord.ai" }]
 dynamic = ["version"]
 requires-python = ">=3.8"
 readme = "README.md"
 license = {text = "Apache-2.0"}
+classifiers = [
+    "Intended Audience :: Developers",
+]
 dependencies = [
     "msgspec~=0.18.5",
     "h5py~=3.10.0",
     "numpy~=1.26.3",
     "tqdm~=4.66",
-    "httpx",
+    "httpx~=0.25",
+    "psycopg[binary]~=3.1",
 ]
 [project.optional-dependencies]
 dev = [
     "ruff~=0.1.3",
-    "pytest~=7.4",
-]
-pgvectors = [
-    "psycopg[binary]",
 ]
 [project.urls]
 "Homepage" = "https://github.com/tensorchord/vectordb-benchmark"
@@ -26,6 +28,9 @@ requires = ["setuptools", "setuptools_scm>=7.0"]
 build-backend = "setuptools.build_meta"
 [project.scripts]
 "vector_bench" = "vector_bench.main:main"
+
+[tool.setuptools]
+packages = ["vector_bench"]
 
 [tool.setuptools_scm]
 fallback_version = "0.0.0"
