@@ -12,6 +12,8 @@ from vector_bench.spec import BenchmarkResult, DatabaseConfig, DatasetConfig, Qu
 
 
 def batched(iterable: Iterable, n: int):
+    if n < 1:
+        raise ValueError("batch size must be positive")
     it = iter(iterable)
     while batch := tuple(islice(it, n)):
         yield batch
@@ -35,7 +37,7 @@ class Benchmark:
 
     def insert(self):
         logger.info("inserting records...")
-        epoch_size, batch_size = 10000, 20
+        epoch_size, batch_size = 2000, 100
         with ThreadPoolExecutor(self.worker_num) as executor:
             logger.info("using %s executors", executor._max_workers)
             for i, epoch in enumerate(batched(self.reader.read_record(), epoch_size)):

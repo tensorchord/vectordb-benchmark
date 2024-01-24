@@ -139,24 +139,25 @@ class PgvectorClient(BaseClient):
 CREATE EXTENSION IF NOT EXISTS vector;
 """
     CREATE_TABLE = """
-CREATE TABLE IF NOT EXISTS {} (
+CREATE TABLE IF NOT EXISTS {table} (
     id SERIAL PRIMARY KEY,
-    emb vector({}) NOT NULL,
+    emb vector({dim}) NOT NULL,
     metadata JSONB NOT NULL
 );
 """
     CREATE_INDEX = """
 CREATE INDEX IF NOT EXISTS vector_search
-ON {}
-USING hnsw (emb {});
+ON {table}
+USING hnsw (emb {method});
 """
     INSERT = """
-INSERT INTO {} (id, emb, metadata)
+INSERT INTO {table} (id, emb, metadata)
 VALUES (%s, %s, %s)
 """
+    # `psycopg` will always panic if `op` is quoted
     SEARCH = """
-SELECT id, emb, metadata, emb {} %s AS score
-FROM {}
+SELECT id, emb, metadata, emb {op} %s AS score
+FROM {{table}}
 ORDER BY score LIMIT %s;
 """
 
@@ -186,19 +187,39 @@ ORDER BY score LIMIT %s;
         with psycopg.connect(self.url) as conn:
             conn.execute(self.LOAD_EXTENSION)
             register_vector(conn)
-            conn.execute(
-                sql.SQL(self.CREATE_TABLE).format(sql.Identifier(self.table), self.dim)
+            # init SQL
+            self.sql_create_table = (
+                sql.SQL(self.CREATE_TABLE)
+                .format(table=sql.Identifier(self.table), dim=self.dim)
+                .as_string(conn)
             )
+            self.sql_create_index = (
+                sql.SQL(self.CREATE_INDEX)
+                .format(
+                    table=sql.Identifier(self.table),
+                    method=sql.Identifier(DISTANCE_TO_METHOD[self.distance]),
+                )
+                .as_string(conn)
+            )
+            self.sql_insert = (
+                sql.SQL(self.INSERT)
+                .format(table=sql.Identifier(self.table))
+                .as_string(conn)
+            )
+            self.sql_query = (
+                sql.SQL(self.SEARCH.format(op=DISTANCE_TO_OP[self.distance]))
+                .format(
+                    table=sql.Identifier(self.table),
+                )
+                .as_string(conn)
+            )
+            # create table
+            conn.execute(self.sql_create_table)
             conn.commit()
 
     def indexing(self):
         with psycopg.connect(self.url) as conn:
-            conn.execute(
-                sql.SQL(self.CREATE_INDEX).format(
-                    sql.Identifier(self.table),
-                    sql.Identifier(DISTANCE_TO_METHOD[self.distance]),
-                )
-            )
+            conn.execute(self.sql_create_index)
             conn.commit()
 
     def insert_batch(self, records: list[Record]):
@@ -207,7 +228,7 @@ ORDER BY score LIMIT %s;
             conn.commit()
             for record in records:
                 conn.execute(
-                    sql.SQL(self.INSERT).format(sql.Identifier(self.table)),
+                    self.sql_insert,
                     (
                         record.id,
                         record.vector,
@@ -216,16 +237,8 @@ ORDER BY score LIMIT %s;
                 )
             conn.commit()
 
-    def query(self, vector: list[float], top_k: int = 5) -> list[Record]:
+    def query(self, vector: np.ndarray, top_k: int = 5) -> list[Record]:
         with psycopg.connect(self.url) as conn:
             register_vector(conn)
-            cur = conn.execute(
-                sql.SQL(self.SEARCH).format(
-                    sql.Identifier(DISTANCE_TO_OP[self.distance]),
-                    sql.Identifier(self.table),
-                ),
-                (vector, top_k),
-            )
-            result = cur.fetchall()
-            conn.commit()
+            result = conn.execute(self.sql_query, (vector, top_k)).fetchall()
         return [Record(id=row[0], vector=row[1], metadata=row[2]) for row in result]

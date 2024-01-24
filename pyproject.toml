@@ -1,5 +1,5 @@
 [project]
-name = "vectordb-benchmark"
+name = "vector_bench"
 dynamic = ["version"]
 requires-python = ">=3.8"
 readme = "README.md"
