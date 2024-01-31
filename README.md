@@ -4,7 +4,7 @@ Supported databases/extensions:
 
 - [x] [`pgvecto.rs`](https://github.com/tensorchord/pgvecto.rs)
 - [x] [`pgvector`](https://github.com/pgvector/pgvector)
-- [ ] [`qdrant`](https://github.com/qdrant/qdrant/)
+- [x] [`qdrant`](https://github.com/qdrant/qdrant/)
 
 Supported datasets:
 
@@ -24,7 +24,7 @@ pip install vector_bench
 Run the docker compose file under [`server`](server/) folder.
 
 ```base
-cd server/pgvecto.rs && docker compose up -d
+docker compose -f docker/compose.${DB_NAME}.yaml up -d
 ```
 
 ### Client

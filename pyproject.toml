@@ -16,6 +16,7 @@ dependencies = [
     "tqdm~=4.66",
     "httpx~=0.25",
     "psycopg[binary]~=3.1",
+    "qdrant-client~=1.7.1",
 ]
 [project.optional-dependencies]
 dev = [

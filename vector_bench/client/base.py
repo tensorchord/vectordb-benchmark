@@ -11,7 +11,7 @@ class BaseClient(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def query(self, vector: list[float], top_k: int = 10):
+    def query(self, vector: list[float], top_k: int = 10) -> list[Record]:
         pass
 
     @abc.abstractclassmethod

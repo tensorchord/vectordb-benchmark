@@ -1,14 +1,14 @@
 services:
-  pgvector:
-    image: ankane/pgvector:v0.5.1
-    container_name: pgvector
+  pgvectors:
+    image: tensorchord/pgvecto-rs:pg15-v0.1.13
+    container_name: pgvectors
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
     ports:
       - "5432:5432"
     volumes:
-      - "/tmp/pgvector_data:/var/lib/postgresql/data"
+      - "/tmp/pgvecto_rs_data:/var/lib/postgresql/data"
     deploy:
       resources:
         limits:
