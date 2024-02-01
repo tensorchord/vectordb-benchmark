@@ -69,7 +69,7 @@ def to_db_binary(value):
 
 class VectorDumper(Dumper):
     def dump(self, obj):
-        return to_db(obj).encode("utf8")
+        return to_db(obj).encode()
 
 
 class VectorBinaryDumper(VectorDumper):
@@ -83,7 +83,7 @@ class VectorLoader(Loader):
     def load(self, data):
         if isinstance(data, memoryview):
             data = bytes(data)
-        return from_db(data.decode("utf8"))
+        return from_db(data.decode())
 
 
 class VectorBinaryLoader(VectorLoader):

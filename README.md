@@ -10,6 +10,11 @@ Supported datasets:
 
 - [x] random generated
 - [x] GIST 960
+- [x] GLOVE
+- [x] Deep Image
+- [x] LAION
+
+For more information, check the [source.py](./vector_bench/dataset/source.py).
 
 ## Installation
 

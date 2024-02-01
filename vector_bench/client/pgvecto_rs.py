@@ -16,8 +16,8 @@ from vector_bench.spec import DatabaseConfig, Distance, Record
 class VectorDumper(Dumper):
     def dump(self, obj):
         if isinstance(obj, np.ndarray):
-            obj = f"[{','.join(map(str, obj))}]"
-        return str(obj).replace(" ", "")
+            return f"[{','.join(map(str, obj))}]".encode()
+        return str(obj).replace(" ", "").encode()
 
 
 class VectorLoader(Loader):
@@ -151,19 +151,6 @@ ORDER BY score LIMIT %s;
         with psycopg.connect(self.url) as conn:
             conn.execute(self.sql_create_index)
             conn.commit()
-
-    async def insert(self, record: Record):
-        async with await psycopg.AsyncConnection.connect(self.url) as conn:
-            register_vector_async(conn)
-            await conn.execute(
-                self.sql_insert,
-                (
-                    record.id,
-                    record.vector,
-                    Jsonb(record.metadata or {}, dumps=msgspec.json.encode),
-                ),
-            )
-            await conn.commit()
 
     def insert_batch(self, records: list[Record]):
         with psycopg.connect(self.url) as conn:

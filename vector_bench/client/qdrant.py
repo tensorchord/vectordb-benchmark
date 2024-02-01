@@ -33,6 +33,12 @@ class QdrantVectorClient(BaseClient):
 
     def init_db(self):
         self.client = QdrantClient(url=self.url)
+        collections_response = self.client.get_collections()
+        for collection in collections_response.collections:
+            if collection.name == self.table:
+                # already exists, return
+                return
+
         self.client.create_collection(
             collection_name=self.table,
             vectors_config=VectorParams(
